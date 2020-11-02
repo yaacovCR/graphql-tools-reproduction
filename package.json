@@ -1,0 +1,20 @@
+{
+  "name": "graphql-tools-reproduction",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start-remote": "ts-node src/remote-schema.ts",
+    "start-local": "ts-node src/local-schema.ts"
+},
+  "dependencies": {
+    "@graphql-tools/delegate": "^7.0.3",
+    "@graphql-tools/wrap": "^7.0.1",
+    "apollo-server": "^2.19.0",
+    "cross-fetch": "^3.0.6",
+    "graphql": "^15.4.0",
+    "graphql-tools": "^7.0.1",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.5"
+  }
+}
