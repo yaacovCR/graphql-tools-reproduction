@@ -2,7 +2,7 @@ import { ApolloServer, gql } from "apollo-server";
 import { delegateToSchema } from "@graphql-tools/delegate";
 import { GraphQLSchema, print } from "graphql";
 import { ExecutionParams } from "graphql-tools";
-import { wrapSchema, introspectSchema } from "@graphql-tools/wrap";
+import { wrapSchema, introspectSchema, RenameTypes, HoistField, PruneSchema } from "@graphql-tools/wrap";
 import { fetch } from "cross-fetch";
 
 const typeDefs = gql`
@@ -45,6 +45,21 @@ const remoteSchema = async (): Promise<GraphQLSchema> => {
   return wrapSchema({
     schema,
     executor,
+    transforms: [
+      new HoistField('CalculateLeasePayload', ['calculation', 'monthlyPayment'], 'monthlyPayment'),
+      // Pruning necessary because LeaseCalculation in the remote schema will now be empty, has to be pruned or schema will error
+      // in a less minimal example (or if Hoisting is changed to copy rather than move the fields), this may be unnecessary
+      new PruneSchema(),
+      // Abstract types in the local schema that do not exist in the remote are automatically expanded to the concrete types
+      // as long as the names of the concrete types in the local schema match that of the remote schema
+      // but in this example, our new abstract type has the same name as the concrete type in the remote schema
+      // so we need to rename the concrete type in the remote schema to match that of the local schema
+      new RenameTypes((name) => {
+        if (name === 'CalculateLeasePayload') {
+          return 'LeaseCalculation';
+        }
+      }),
+    ],
   });
 };
 
