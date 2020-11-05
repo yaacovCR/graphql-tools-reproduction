@@ -6,47 +6,24 @@ import { wrapSchema, introspectSchema } from "@graphql-tools/wrap";
 import { fetch } from "cross-fetch";
 
 const typeDefs = gql`
-  type LeaseBoundary {
-    min: Float!
-    max: Float!
-  }
-
   type ObjectTooOldError {
     message: String!
     code: Int!
     path: [String!]!
   }
 
-  type LeaseBoundaries {
-    downPayment: LeaseBoundary!
-  }
-
   type LeaseCalculation {
     monthlyPayment: Float!
-    boundaries: LeaseBoundaries!
   }
 
   union LeaseCalculationPayload = LeaseCalculation | ObjectTooOldError
 
-  input ObjectInput {
-    categoryId: ID!
-    brand: String!
-    type: String!
-    year: Int!
-    used: Boolean!
-  }
-
   input LeaseCalculationInput {
     purchasePrice: Float!
-    tenor: Int!
-    downPayment: Float!
-    balloonPayment: Float!
-    object: ObjectInput!
-    chamberOfCommerceNumber: String!
   }
 
   type Query {
-    leaseCalculation(input: LeaseCalculationInput!): LeaseCalculationPayload!
+    leaseCalculation(input: LeaseCalculationInput!): LeaseCalculationPayload
   }
 `;
 
@@ -90,10 +67,6 @@ const resolvers = {
     ): Promise<any> {
       const {
         purchasePrice,
-        tenor,
-        downPayment,
-        balloonPayment,
-        object,
       } = args.input;
 
       const schema = await remoteSchema();
@@ -104,13 +77,6 @@ const resolvers = {
         args: {
           input: {
             purchasePrice,
-            tenor,
-            downPayment,
-            balloonPayment,
-            categoryId: object.categoryId,
-            objectUsed: object.used,
-            operational: false,
-            intermediaryToken: "xVCsFmBV8ZNCZX7Adn8bWDsb",
           },
         },
         context,

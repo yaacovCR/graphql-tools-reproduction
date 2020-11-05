@@ -1,39 +1,20 @@
 import { ApolloServer, gql } from "apollo-server";
 
 const typeDefs = gql`
-  type Boundary {
-    min: Int!
-    max: Int!
-  }
-
-  type LeaseBoundaries {
-    downPayment: Boundary!
-  }
-
   type LeaseCalculation {
-    balloonPayment: Float!
     monthlyPayment: Float!
   }
 
   type CalculateLeasePayload {
     calculation: LeaseCalculation
-    boundaries: LeaseBoundaries
   }
 
   input CalculateLeaseInput {
-    balloonPayment: Float!
-    categoryId: ID!
-    downPayment: Float!
-    objectUsed: Boolean!
-    objectYear: Int!
-    operational: Boolean!
     purchasePrice: Float!
-    tenor: Int!
-    intermediaryToken: String!
   }
 
   type Query {
-    calculateLease(input: CalculateLeaseInput!): CalculateLeasePayload!
+    calculateLease(input: CalculateLeaseInput!): CalculateLeasePayload
   }
 `;
 
@@ -45,12 +26,6 @@ const resolvers = {
       return {
         calculation: {
           monthlyPayment: purchasePrice * 0.15,
-        },
-        boundaries: {
-          downPayment: {
-            min: purchasePrice * 0.1,
-            max: purchasePrice - 1,
-          },
         },
       };
     },
